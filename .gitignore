@@ -6,3 +6,4 @@ riderModule.iml
 libnfd.dylib
 libnfd.so
 nfd.dll
+/.idea/

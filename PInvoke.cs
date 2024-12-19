@@ -15,10 +15,10 @@ internal static unsafe partial class PInvoke
     [LibraryImport(LibName)] public static partial void NFD_Quit();
 
     [LibraryImport(LibName)]
-    public static partial Result NFD_OpenDialogU8(out nint outPath, void* filterList, int filterCount, byte* defaultPath);
+    public static partial Result NFD_OpenDialogU8(out nint outPath, FilterU8* filterList, int filterCount, byte* defaultPath);
 
     [LibraryImport(LibName)]
-    public static partial Result NFD_OpenDialogN(out nint outPath, void* filterList, int filterCount, char* defaultPath);
+    public static partial Result NFD_OpenDialogN(out nint outPath, FilterN* filterList, int filterCount, char* defaultPath);
 
     [LibraryImport(LibName)] public static partial Result NFD_OpenDialogMultipleU8(out nint outPaths,
         FilterU8* filterList,
