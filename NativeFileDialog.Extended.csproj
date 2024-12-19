@@ -3,14 +3,14 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Version>1.2.0</Version>
-        <Title>NativeFileDialog.Extended</Title>
+        <Version>1.2.1</Version>
+        <Title>NativeFileDialogExtended</Title>
         <Authors>TheAirBlow, btzy</Authors>
         <Description>Simple to use C# wrapper for nativefiledialog-extended</Description>
         <Copyright>Copyright © TheAirBlow 2024</Copyright>
-        <PackageProjectUrl>https://github.com/TheAirBlow/NativeFileDialog.Extended</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/TheAirBlow/NativeFileDialog.Extended/blob/main/LICENCE</PackageLicenseUrl>
-        <RepositoryUrl>https://github.com/TheAirBlow/NativeFileDialog.Extended</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/nolife99/NativeFileDialog.Extended</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/nolife99/NativeFileDialog.Extended/blob/main/LICENCE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/nolife99/NativeFileDialog.Extended</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <LangVersion>latest</LangVersion>
         <DebugType>embedded</DebugType>
