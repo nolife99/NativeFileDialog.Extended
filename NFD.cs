@@ -23,7 +23,7 @@ public static unsafe class NFD
     /// <param name="filterList">The file name filter string.</param>
     /// <returns>A string containing the file name selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string OpenDialog(ReadOnlySpan<char> defaultPath, IEnumerable<KeyValuePair<string, string>> filterList)
+    public static string OpenDialog(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
         => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
             OpenDialogN(defaultPath, filterList) :
             OpenDialogU8(defaultPath, filterList);
@@ -43,7 +43,7 @@ public static unsafe class NFD
     /// <param name="filterList">The file name filter string.</param>
     /// <returns>A string array containing the file names selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string[] OpenDialogMultiple(ReadOnlySpan<char> defaultPath, IEnumerable<KeyValuePair<string, string>> filterList)
+    public static string[] OpenDialogMultiple(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
         => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
             OpenDialogMultipleN(defaultPath, filterList) :
             OpenDialogMultipleU8(defaultPath, filterList);
@@ -65,7 +65,7 @@ public static unsafe class NFD
     /// <param name="filterList">The file name filter string.</param>
     /// <returns>A string containing the file name selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string SaveDialog(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IEnumerable<KeyValuePair<string, string>> filterList)
+    public static string SaveDialog(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
         => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
             SaveDialogN(defaultPath, defaultName, filterList) :
             SaveDialogU8(defaultPath, defaultName, filterList);
@@ -130,22 +130,21 @@ public static unsafe class NFD
         }
     }
 
-    static string SaveDialogN(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IEnumerable<KeyValuePair<string, string>> filterList)
+    static string SaveDialogN(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
-        var list = filterList.ToArray();
-        var filters = stackalloc PInvoke.FilterN[list.Length];
-        Span<nint> allocLists = stackalloc nint[list.Length * 2];
+        var filters = stackalloc PInvoke.FilterN[filterList.Count];
+        Span<nint> allocLists = stackalloc nint[filterList.Count * 2];
 
-        list.ToFilterListN(filters, allocLists);
+        filterList.ToFilterListN(filters, allocLists);
 
         try
         {
             fixed (char* defaultPathPtr = defaultPath)
             fixed (char* defaultNamePtr = defaultName)
             {
-                PInvoke.NFD_SaveDialogN(out var path, filters, list.Length, defaultPathPtr, defaultNamePtr).ThrowOnError();
+                PInvoke.NFD_SaveDialogN(out var path, filters, filterList.Count, defaultPathPtr, defaultNamePtr).ThrowOnError();
 
                 var str = Marshal.PtrToStringUni(path);
                 PInvoke.NFD_FreePathN(path);
@@ -160,15 +159,14 @@ public static unsafe class NFD
         }
     }
 
-    static string SaveDialogU8(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IEnumerable<KeyValuePair<string, string>> filterList)
+    static string SaveDialogU8(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
-        var list = filterList.ToArray();
-        var filters = stackalloc PInvoke.FilterU8[list.Length];
-        Span<nint> allocLists = stackalloc nint[list.Length * 2];
+        var filters = stackalloc PInvoke.FilterU8[filterList.Count];
+        Span<nint> allocLists = stackalloc nint[filterList.Count * 2];
 
-        list.ToFilterListU8(filters, allocLists);
+        filterList.ToFilterListU8(filters, allocLists);
 
         try
         {
@@ -178,7 +176,7 @@ public static unsafe class NFD
             Span<byte> defaultNameUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultName)];
             Encoding.UTF8.GetBytes(defaultName, defaultNameUtf8);
 
-                PInvoke.NFD_SaveDialogU8(out var path, filters, list.Length, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8)), (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultNameUtf8))).ThrowOnError();
+                PInvoke.NFD_SaveDialogU8(out var path, filters, filterList.Count, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8)), (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultNameUtf8))).ThrowOnError();
 
                 var str = Marshal.PtrToStringUTF8(path);
                 PInvoke.NFD_FreePathU8(path);
@@ -192,21 +190,20 @@ public static unsafe class NFD
         }
     }
 
-    static string[] OpenDialogMultipleN(ReadOnlySpan<char> defaultPath, IEnumerable<KeyValuePair<string, string>> filterList)
+    static string[] OpenDialogMultipleN(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
-        var list = filterList.ToArray();
-        var filters = stackalloc PInvoke.FilterN[list.Length];
-        Span<nint> allocLists = stackalloc nint[list.Length * 2];
+        var filters = stackalloc PInvoke.FilterN[filterList.Count];
+        Span<nint> allocLists = stackalloc nint[filterList.Count * 2];
 
-        list.ToFilterListN(filters, allocLists);
+        filterList.ToFilterListN(filters, allocLists);
 
         try
         {
             fixed (char* defaultPathPtr = defaultPath)
             {
-                PInvoke.NFD_OpenDialogMultipleN(out var ptr, filters, list.Length, defaultPathPtr).ThrowOnError();
+                PInvoke.NFD_OpenDialogMultipleN(out var ptr, filters, filterList.Count, defaultPathPtr).ThrowOnError();
                 PInvoke.NFD_PathSet_GetCount(ptr, out var count);
 
                 var array = new string[count];
@@ -229,22 +226,21 @@ public static unsafe class NFD
         }
     }
 
-    static string[] OpenDialogMultipleU8(ReadOnlySpan<char> defaultPath, IEnumerable<KeyValuePair<string, string>> filterList)
+    static string[] OpenDialogMultipleU8(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
-        var list = filterList.ToArray();
-        var filters = stackalloc PInvoke.FilterU8[list.Length];
-        Span<nint> allocLists = stackalloc nint[list.Length * 2];
+        var filters = stackalloc PInvoke.FilterU8[filterList.Count];
+        Span<nint> allocLists = stackalloc nint[filterList.Count * 2];
 
-        list.ToFilterListU8(filters, allocLists);
+        filterList.ToFilterListU8(filters, allocLists);
 
         try
         {
             Span<byte> defaultPathUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultPath)];
             Encoding.UTF8.GetBytes(defaultPath, defaultPathUtf8);
 
-                PInvoke.NFD_OpenDialogMultipleU8(out var ptr, filters, list.Length, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8))).ThrowOnError();
+                PInvoke.NFD_OpenDialogMultipleU8(out var ptr, filters, filterList.Count, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8))).ThrowOnError();
                 PInvoke.NFD_PathSet_GetCount(ptr, out var count);
 
                 var array = new string[count];
@@ -266,21 +262,20 @@ public static unsafe class NFD
         }
     }
 
-    static string OpenDialogN(ReadOnlySpan<char> defaultPath, IEnumerable<KeyValuePair<string, string>> filterList)
+    static string OpenDialogN(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
-        var list = filterList.ToArray();
-        var filters = stackalloc PInvoke.FilterN[list.Length];
-        Span<nint> allocLists = stackalloc nint[list.Length * 2];
+        var filters = stackalloc PInvoke.FilterN[filterList.Count];
+        Span<nint> allocLists = stackalloc nint[filterList.Count * 2];
 
-        list.ToFilterListN(filters, allocLists);
+        filterList.ToFilterListN(filters, allocLists);
 
         try
         {
             fixed (char* defaultPathPtr = defaultPath)
             {
-                PInvoke.NFD_OpenDialogN(out var path, filters, list.Length, defaultPathPtr).ThrowOnError();
+                PInvoke.NFD_OpenDialogN(out var path, filters, filterList.Count, defaultPathPtr).ThrowOnError();
                 var str = Marshal.PtrToStringUni(path);
                 PInvoke.NFD_FreePathN(path);
 
@@ -294,15 +289,14 @@ public static unsafe class NFD
         }
     }
 
-    static string OpenDialogU8(ReadOnlySpan<char> defaultPath, IEnumerable<KeyValuePair<string, string>> filterList)
+    static string OpenDialogU8(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
-        var list = filterList.ToArray();
-        var filters = stackalloc PInvoke.FilterU8[list.Length];
-        Span<nint> allocLists = stackalloc nint[list.Length * 2];
+        var filters = stackalloc PInvoke.FilterU8[filterList.Count];
+        Span<nint> allocLists = stackalloc nint[filterList.Count * 2];
 
-        list.ToFilterListU8(filters, allocLists);
+        filterList.ToFilterListU8(filters, allocLists);
 
         try
         {
@@ -311,7 +305,7 @@ public static unsafe class NFD
 
             fixed (byte* defaultPathPtr = defaultPathUtf8)
             {
-                PInvoke.NFD_OpenDialogU8(out var path, filters, list.Length, defaultPathPtr).ThrowOnError();
+                PInvoke.NFD_OpenDialogU8(out var path, filters, filterList.Count, defaultPathPtr).ThrowOnError();
                 var str = Marshal.PtrToStringUTF8(path);
                 PInvoke.NFD_FreePathU8(path);
 
@@ -330,31 +324,37 @@ public static unsafe class NFD
         if (result is PInvoke.Result.NFD_ERROR) throw new ExternalException(GetError());
     }
 
-    static void ToFilterListU8(this KeyValuePair<string, string>[] dict, PInvoke.FilterU8* filters, Span<nint> allocs)
+    static void ToFilterListU8(this IReadOnlyCollection<KeyValuePair<string, string>> dict, PInvoke.FilterU8* filters, Span<nint> allocs)
     {
-        for (var i = 0; i < dict.Length; ++i)
+        var i = 0;
+        foreach (var item in dict)
         {
-            var name = Marshal.StringToCoTaskMemUTF8(dict[i].Key);
-            var spec = Marshal.StringToCoTaskMemUTF8(dict[i].Value);
+            var name = Marshal.StringToCoTaskMemUTF8(item.Key);
+            var spec = Marshal.StringToCoTaskMemUTF8(item.Value);
 
             allocs[i * 2] = name;
             allocs[i * 2 + 1] = spec;
 
             filters[i] = new() { Name = (byte*)name, Spec = (byte*)spec };
+
+            ++i;
         }
     }
 
-    static void ToFilterListN(this KeyValuePair<string, string>[] dict, PInvoke.FilterN* filters, Span<nint> allocs)
+    static void ToFilterListN(this IReadOnlyCollection<KeyValuePair<string, string>> dict, PInvoke.FilterN* filters, Span<nint> allocs)
     {
-        for (var i = 0; i < dict.Length; i++)
+        var i = 0;
+        foreach (var item in dict)
         {
-            var name = Marshal.StringToCoTaskMemUni(dict[i].Key);
-            var spec = Marshal.StringToCoTaskMemUni(dict[i].Value);
+            var name = Marshal.StringToCoTaskMemUni(item.Key);
+            var spec = Marshal.StringToCoTaskMemUni(item.Value);
 
             allocs[i * 2] = name;
             allocs[i * 2 + 1] = spec;
 
             filters[i] = new() { Name = (char*)name, Spec = (char*)spec };
+
+            ++i;
         }
     }
 }
