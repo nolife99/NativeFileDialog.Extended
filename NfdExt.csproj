@@ -29,8 +29,8 @@
             <PackagePath>runtimes/osx/native</PackagePath>
             <Pack>true</Pack>
         </Content>
-        <Content Include="build\net40\NativeFileDialog.Extended.targets">
-            <PackagePath>build/net40/NativeFileDialog.Extended.targets</PackagePath>
+        <Content Include="build\net40\NfdExt.targets">
+            <PackagePath>build/net40/NfdExt.targets</PackagePath>
             <Pack>true</Pack>
         </Content>
     </ItemGroup>

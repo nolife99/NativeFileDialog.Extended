@@ -3,7 +3,7 @@ Simple to use C# wrapper for [nativefiledialog-extended](https://github.com/btzy
 
 ## Usage
 ```csharp
-using NativeFileDialog.Extended;
+using NfdExt;
 
 NFD.OpenDialog(".");
 NFD.OpenDialog(".",
