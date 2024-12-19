@@ -71,7 +71,7 @@ jobs:
         mkdir build
         mkdir install
         cd build
-        cmake -DCMAKE_INSTALL_PREFIX="../install" -DBUILD_SHARED_LIBS=ON ..
+        cmake -DCMAKE_INSTALL_PREFIX="../install" -DBUILD_SHARED_LIBS=ON -DNFD_OVERRIDE_RECENT_WITH_DEFAULT=ON ..
     - name: Build
       run: |
         cd nativefiledialog-extended

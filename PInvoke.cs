@@ -1,84 +1,72 @@
+namespace NativeFileDialog.Extended;
+
 using System.Runtime.InteropServices;
 
-namespace NativeFileDialog.Extended; 
+internal static unsafe partial class PInvoke
+{
+    public enum Result
+    {
+        NFD_ERROR, NFD_OKAY, NFD_CANCEL
+    }
 
-internal class PInvoke {
-    public struct FilterU8 {
-        public string Name;
-        public string Spec;
+    const string LibName = "nfd";
+
+    [LibraryImport(LibName)] public static partial Result NFD_Init();
+    [LibraryImport(LibName)] public static partial void NFD_Quit();
+
+    [LibraryImport(LibName)]
+    public static partial Result NFD_OpenDialogU8(out nint outPath, void* filterList, int filterCount, byte* defaultPath);
+
+    [LibraryImport(LibName)]
+    public static partial Result NFD_OpenDialogN(out nint outPath, void* filterList, int filterCount, char* defaultPath);
+
+    [LibraryImport(LibName)] public static partial Result NFD_OpenDialogMultipleU8(out nint outPaths,
+        FilterU8* filterList,
+        int filterCount,
+        byte* defaultPath);
+
+    [LibraryImport(LibName)] public static partial Result NFD_OpenDialogMultipleN(out nint outPaths,
+        FilterN* filterList,
+        int filterCount,
+        char* defaultPath);
+
+    [LibraryImport(LibName)] public static partial Result NFD_PathSet_GetCount(nint pathSet, out int count);
+    [LibraryImport(LibName)] public static partial Result NFD_PathSet_GetPathU8(nint pathSet, int index, out nint outPath);
+    [LibraryImport(LibName)] public static partial Result NFD_PathSet_GetPathN(nint pathSet, int index, out nint outPath);
+
+    [LibraryImport(LibName)] public static partial void NFD_PathSet_FreePathU8(nint filePath);
+    [LibraryImport(LibName)] public static partial void NFD_PathSet_FreePathN(nint filePath);
+
+    [LibraryImport(LibName)] public static partial Result NFD_SaveDialogU8(out nint outPath,
+        FilterU8* filterList,
+        int filterCount,
+        byte* defaultPath,
+        byte* defaultName);
+
+    [LibraryImport(LibName)] public static partial Result NFD_SaveDialogN(out nint outPath,
+        FilterN* filterList,
+        int filterCount,
+        char* defaultPath,
+        char* defaultName);
+
+    [LibraryImport(LibName)] public static partial Result NFD_PickFolderU8(out nint outPath, byte* defaultPath);
+    [LibraryImport(LibName)] public static partial Result NFD_PickFolderN(out nint outPath, char* defaultPath);
+
+    [LibraryImport(LibName)] public static partial nint NFD_GetError();
+    [LibraryImport(LibName)] public static partial void NFD_ClearError();
+
+    [LibraryImport(LibName)] public static partial void NFD_FreePathN(nint filePath);
+    [LibraryImport(LibName)] public static partial void NFD_FreePathU8(nint filePath);
+
+    public struct FilterU8
+    {
+        public byte* Name;
+        public byte* Spec;
     }
-    
-    public struct FilterN {
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string Name;
-        
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string Spec;
+
+    public struct FilterN
+    {
+        public char* Name;
+        public char* Spec;
     }
-    
-    public enum Result {
-        NFD_ERROR,
-        NFD_OKAY,
-        NFD_CANCEL
-    };
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_Init();
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_Quit();
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_OpenDialogU8(out string outPath, 
-        FilterU8[] filterList, int filterCount, string defaultPath);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_OpenDialogN(
-        [MarshalAs(UnmanagedType.LPWStr)] out string outPath, 
-        FilterN[] filterList, int filterCount,
-        [MarshalAs(UnmanagedType.LPWStr)] string defaultPath);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_OpenDialogMultipleU8(out IntPtr outPaths, 
-        FilterU8[] filterList, int filterCount, string defaultPath);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_OpenDialogMultipleN(out IntPtr outPaths, 
-        FilterN[] filterList, int filterCount, 
-        [MarshalAs(UnmanagedType.LPWStr)] string defaultPath);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_PathSet_GetCount(IntPtr pathSet, out int count);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_PathSet_GetPathU8(IntPtr pathSet, int index, out string outPath);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_PathSet_GetPathN(IntPtr pathSet, int index,
-        [MarshalAs(UnmanagedType.LPWStr)] out string outPath);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_SaveDialogU8(out string outPath, 
-        FilterU8[] filterList, int filterCount, string defaultPath, string defaultName);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_SaveDialogN(
-        [MarshalAs(UnmanagedType.LPWStr)] out string outPath, 
-        FilterN[] filterList, int filterCount,
-        [MarshalAs(UnmanagedType.LPWStr)] string defaultPath,
-        [MarshalAs(UnmanagedType.LPWStr)] string defaultName);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_PickFolderU8(out string outPath, string defaultPath);
-    
-    [DllImport("nfd")]
-    public static extern Result NFD_PickFolderN(
-        [MarshalAs(UnmanagedType.LPWStr)] out string outPath,
-        [MarshalAs(UnmanagedType.LPWStr)] string defaultPath);
-    
-    [DllImport("nfd")]
-    public static extern string? NFD_GetError();
-    
-    [DllImport("nfd")]
-    public static extern void NFD_ClearError();
 }

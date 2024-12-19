@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.1;net8.0</TargetFrameworks>
+        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Version>1.2.0</Version>
         <Title>NativeFileDialog.Extended</Title>
@@ -14,6 +13,7 @@
         <RepositoryUrl>https://github.com/TheAirBlow/NativeFileDialog.Extended</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <LangVersion>latest</LangVersion>
+        <DebugType>embedded</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
