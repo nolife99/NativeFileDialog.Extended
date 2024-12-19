@@ -3,7 +3,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Version>1.2.2</Version>
+        <Version>1.2.3</Version>
         <Title>NfdExt</Title>
         <Authors>TheAirBlow, btzy</Authors>
         <Description>Simple to use C# wrapper for nativefiledialog-extended</Description>

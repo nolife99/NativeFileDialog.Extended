@@ -43,10 +43,10 @@ public static unsafe class NFD
     /// <param name="filterList">The file name filter string.</param>
     /// <returns>A string array containing the file names selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string[] OpenDialogMultiple(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
-        => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            OpenDialogMultipleN(defaultPath, filterList) :
-            OpenDialogMultipleU8(defaultPath, filterList);
+    public static string[] OpenDialogMultiple(ReadOnlySpan<char> defaultPath,
+        IReadOnlyCollection<KeyValuePair<string, string>> filterList) => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+        OpenDialogMultipleN(defaultPath, filterList) :
+        OpenDialogMultipleU8(defaultPath, filterList);
 
     /// <summary>
     ///     Displays a standard dialog box that prompts the user to open multiple files.
@@ -54,8 +54,7 @@ public static unsafe class NFD
     /// <param name="defaultPath">The initial path or directory displayed by the file dialog box.</param>
     /// <returns>A string array containing the file names selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string[] OpenDialogMultiple(ReadOnlySpan<char> defaultPath)
-        => OpenDialogMultiple(defaultPath, []);
+    public static string[] OpenDialogMultiple(ReadOnlySpan<char> defaultPath) => OpenDialogMultiple(defaultPath, []);
 
     /// <summary>
     ///     Prompts the user to select a location for saving a file.
@@ -65,10 +64,11 @@ public static unsafe class NFD
     /// <param name="filterList">The file name filter string.</param>
     /// <returns>A string containing the file name selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string SaveDialog(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
-        => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            SaveDialogN(defaultPath, defaultName, filterList) :
-            SaveDialogU8(defaultPath, defaultName, filterList);
+    public static string SaveDialog(ReadOnlySpan<char> defaultPath,
+        ReadOnlySpan<char> defaultName,
+        IReadOnlyCollection<KeyValuePair<string, string>> filterList) => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+        SaveDialogN(defaultPath, defaultName, filterList) :
+        SaveDialogU8(defaultPath, defaultName, filterList);
 
     /// <summary>
     ///     Prompts the user to select a location for saving a file.
@@ -118,11 +118,13 @@ public static unsafe class NFD
             Span<byte> defaultPathUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultPath)];
             Encoding.UTF8.GetBytes(defaultPath, defaultPathUtf8);
 
-                PInvoke.NFD_PickFolderU8(out var path, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8))).ThrowOnError();
-                var str = Marshal.PtrToStringUTF8(path);
-                PInvoke.NFD_FreePathU8(path);
+            PInvoke.NFD_PickFolderU8(out var path, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8)))
+                .ThrowOnError();
 
-                return str;
+            var str = Marshal.PtrToStringUTF8(path);
+            PInvoke.NFD_FreePathU8(path);
+
+            return str;
         }
         finally
         {
@@ -130,7 +132,9 @@ public static unsafe class NFD
         }
     }
 
-    static string SaveDialogN(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
+    static string SaveDialogN(ReadOnlySpan<char> defaultPath,
+        ReadOnlySpan<char> defaultName,
+        IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
@@ -159,7 +163,9 @@ public static unsafe class NFD
         }
     }
 
-    static string SaveDialogU8(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
+    static string SaveDialogU8(ReadOnlySpan<char> defaultPath,
+        ReadOnlySpan<char> defaultName,
+        IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
@@ -176,12 +182,17 @@ public static unsafe class NFD
             Span<byte> defaultNameUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultName)];
             Encoding.UTF8.GetBytes(defaultName, defaultNameUtf8);
 
-                PInvoke.NFD_SaveDialogU8(out var path, filters, filterList.Count, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8)), (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultNameUtf8))).ThrowOnError();
+            PInvoke.NFD_SaveDialogU8(out var path,
+                    filters,
+                    filterList.Count,
+                    (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8)),
+                    (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultNameUtf8)))
+                .ThrowOnError();
 
-                var str = Marshal.PtrToStringUTF8(path);
-                PInvoke.NFD_FreePathU8(path);
+            var str = Marshal.PtrToStringUTF8(path);
+            PInvoke.NFD_FreePathU8(path);
 
-                return str;
+            return str;
         }
         finally
         {
@@ -190,7 +201,8 @@ public static unsafe class NFD
         }
     }
 
-    static string[] OpenDialogMultipleN(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
+    static string[] OpenDialogMultipleN(ReadOnlySpan<char> defaultPath,
+        IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
@@ -226,7 +238,8 @@ public static unsafe class NFD
         }
     }
 
-    static string[] OpenDialogMultipleU8(ReadOnlySpan<char> defaultPath, IReadOnlyCollection<KeyValuePair<string, string>> filterList)
+    static string[] OpenDialogMultipleU8(ReadOnlySpan<char> defaultPath,
+        IReadOnlyCollection<KeyValuePair<string, string>> filterList)
     {
         PInvoke.NFD_Init().ThrowOnError();
 
@@ -240,20 +253,25 @@ public static unsafe class NFD
             Span<byte> defaultPathUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultPath)];
             Encoding.UTF8.GetBytes(defaultPath, defaultPathUtf8);
 
-                PInvoke.NFD_OpenDialogMultipleU8(out var ptr, filters, filterList.Count, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8))).ThrowOnError();
-                PInvoke.NFD_PathSet_GetCount(ptr, out var count);
+            PInvoke.NFD_OpenDialogMultipleU8(out var ptr,
+                    filters,
+                    filterList.Count,
+                    (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8)))
+                .ThrowOnError();
 
-                var array = new string[count];
-                for (var i = 0; i < count; ++i)
-                {
-                    PInvoke.NFD_PathSet_GetPathU8(ptr, i, out var path);
-                    array[i] = Marshal.PtrToStringUTF8(path);
-                    PInvoke.NFD_PathSet_FreePathU8(path);
-                }
+            PInvoke.NFD_PathSet_GetCount(ptr, out var count);
 
-                PInvoke.NFD_FreePathU8(ptr);
+            var array = new string[count];
+            for (var i = 0; i < count; ++i)
+            {
+                PInvoke.NFD_PathSet_GetPathU8(ptr, i, out var path);
+                array[i] = Marshal.PtrToStringUTF8(path);
+                PInvoke.NFD_PathSet_FreePathU8(path);
+            }
 
-                return array;
+            PInvoke.NFD_FreePathU8(ptr);
+
+            return array;
         }
         finally
         {
@@ -324,7 +342,9 @@ public static unsafe class NFD
         if (result is PInvoke.Result.NFD_ERROR) throw new ExternalException(GetError());
     }
 
-    static void ToFilterListU8(this IReadOnlyCollection<KeyValuePair<string, string>> dict, PInvoke.FilterU8* filters, Span<nint> allocs)
+    static void ToFilterListU8(this IReadOnlyCollection<KeyValuePair<string, string>> dict,
+        PInvoke.FilterU8* filters,
+        Span<nint> allocs)
     {
         var i = 0;
         foreach (var item in dict)
@@ -341,7 +361,9 @@ public static unsafe class NFD
         }
     }
 
-    static void ToFilterListN(this IReadOnlyCollection<KeyValuePair<string, string>> dict, PInvoke.FilterN* filters, Span<nint> allocs)
+    static void ToFilterListN(this IReadOnlyCollection<KeyValuePair<string, string>> dict,
+        PInvoke.FilterN* filters,
+        Span<nint> allocs)
     {
         var i = 0;
         foreach (var item in dict)
