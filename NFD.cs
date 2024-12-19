@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 /// <summary>
-///     Native file dialog extended wrapper
+///     Wraps the native file dialog library.
 /// </summary>
 public static unsafe class NFD
 {
@@ -13,15 +13,15 @@ public static unsafe class NFD
     {
         var error = PInvoke.NFD_GetError();
         PInvoke.NFD_ClearError();
-        return Marshal.PtrToStringAnsi(error);
+        return Marshal.PtrToStringUTF8(error);
     }
 
     /// <summary>
-    ///     Opens a file picker dialog with extesion filters
+    ///     Displays a standard dialog box that prompts the user to open a file.
     /// </summary>
-    /// <param name="defaultPath">Default Path</param>
-    /// <param name="filterList">Filter List</param>
-    /// <returns>Path to file, can be empty</returns>
+    /// <param name="defaultPath">The initial path or directory displayed by the file dialog box.</param>
+    /// <param name="filterList">The file name filter string.</param>
+    /// <returns>A string containing the file name selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string OpenDialog(ReadOnlySpan<char> defaultPath, IEnumerable<KeyValuePair<string, string>> filterList)
         => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
@@ -29,19 +29,19 @@ public static unsafe class NFD
             OpenDialogU8(defaultPath, filterList);
 
     /// <summary>
-    ///     Opens a file picker dialog
+    ///     Displays a standard dialog box that prompts the user to open a file.
     /// </summary>
-    /// <param name="defaultPath">Default Path</param>
-    /// <returns>Path to file, can be empty</returns>
+    /// <param name="defaultPath">The initial path or directory displayed by the file dialog box.</param>
+    /// <returns>A string containing the file name selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string OpenDialog(ReadOnlySpan<char> defaultPath) => OpenDialog(defaultPath, []);
 
     /// <summary>
-    ///     Opens a file picker dialog for multiple files with extension filters
+    ///     Displays a standard dialog box that prompts the user to open multiple files.
     /// </summary>
-    /// <param name="defaultPath">Default Path</param>
-    /// <param name="filterList">Filter List</param>
-    /// <returns>Paths to files, can be empty</returns>
+    /// <param name="defaultPath">The initial path or directory displayed by the file dialog box.</param>
+    /// <param name="filterList">The file name filter string.</param>
+    /// <returns>A string array containing the file names selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string[] OpenDialogMultiple(ReadOnlySpan<char> defaultPath, IEnumerable<KeyValuePair<string, string>> filterList)
         => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
@@ -49,21 +49,21 @@ public static unsafe class NFD
             OpenDialogMultipleU8(defaultPath, filterList);
 
     /// <summary>
-    ///     Opens a file picker dialog for multiple files
+    ///     Displays a standard dialog box that prompts the user to open multiple files.
     /// </summary>
-    /// <param name="defaultPath">Default Path</param>
-    /// <returns>Paths to files, can be empty</returns>
+    /// <param name="defaultPath">The initial path or directory displayed by the file dialog box.</param>
+    /// <returns>A string array containing the file names selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string[] OpenDialogMultiple(ReadOnlySpan<char> defaultPath)
         => OpenDialogMultiple(defaultPath, []);
 
     /// <summary>
-    ///     Opens a file save dialog with extension filters
+    ///     Prompts the user to select a location for saving a file.
     /// </summary>
-    /// <param name="defaultPath">Default Path</param>
-    /// <param name="defaultName">Default Name</param>
-    /// <param name="filterList">Filter List</param>
-    /// <returns>Path to file, can be empty</returns>
+    /// <param name="defaultPath">The initial path or directory displayed by the file dialog box.</param>
+    /// <param name="defaultName">The initial file name to be saved.</param>
+    /// <param name="filterList">The file name filter string.</param>
+    /// <returns>A string containing the file name selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string SaveDialog(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName, IEnumerable<KeyValuePair<string, string>> filterList)
         => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
@@ -71,21 +71,20 @@ public static unsafe class NFD
             SaveDialogU8(defaultPath, defaultName, filterList);
 
     /// <summary>
-    ///     Opens a file save dialog
+    ///     Prompts the user to select a location for saving a file.
     /// </summary>
-    /// <param name="defaultPath">Default Path</param>
-    /// <param name="defaultName">Default Name</param>
-    /// =
-    /// <returns>Path to file, can be empty</returns>
+    /// <param name="defaultPath">The initial path or directory displayed by the file dialog box.</param>
+    /// <param name="defaultName">The initial file name to be saved.</param>
+    /// <returns>A string containing the file name selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string SaveDialog(ReadOnlySpan<char> defaultPath, ReadOnlySpan<char> defaultName)
         => SaveDialog(defaultPath, defaultName, []);
 
     /// <summary>
-    ///     Opens a folder picker dialog
+    ///     Prompts the user to select a folder.
     /// </summary>
-    /// <param name="defaultPath">Default Path</param>
-    /// <returns>Path to folder, can be empty</returns>
+    /// <param name="defaultPath">The initial path or directory displayed by the file dialog box.</param>
+    /// <returns>A string containing the file name selected in the file dialog box.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string PickFolder(ReadOnlySpan<char> defaultPath) => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
         PickFolderN(defaultPath) :
@@ -119,14 +118,11 @@ public static unsafe class NFD
             Span<byte> defaultPathUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultPath)];
             Encoding.UTF8.GetBytes(defaultPath, defaultPathUtf8);
 
-            fixed (byte* ptr = defaultPathUtf8)
-            {
-                PInvoke.NFD_PickFolderU8(out var path, ptr).ThrowOnError();
+                PInvoke.NFD_PickFolderU8(out var path, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8))).ThrowOnError();
                 var str = Marshal.PtrToStringUTF8(path);
                 PInvoke.NFD_FreePathU8(path);
 
                 return str;
-            }
         }
         finally
         {
@@ -159,7 +155,7 @@ public static unsafe class NFD
         }
         finally
         {
-            foreach (var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
+            foreach (ref var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
             PInvoke.NFD_Quit();
         }
     }
@@ -182,20 +178,16 @@ public static unsafe class NFD
             Span<byte> defaultNameUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultName)];
             Encoding.UTF8.GetBytes(defaultName, defaultNameUtf8);
 
-            fixed (byte* defaultPathPtr = defaultPathUtf8)
-            fixed (byte* defaultNamePtr = defaultNameUtf8)
-            {
-                PInvoke.NFD_SaveDialogU8(out var path, filters, list.Length, defaultPathPtr, defaultNamePtr).ThrowOnError();
+                PInvoke.NFD_SaveDialogU8(out var path, filters, list.Length, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8)), (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultNameUtf8))).ThrowOnError();
 
                 var str = Marshal.PtrToStringUTF8(path);
                 PInvoke.NFD_FreePathU8(path);
 
                 return str;
-            }
         }
         finally
         {
-            foreach (var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
+            foreach (ref var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
             PInvoke.NFD_Quit();
         }
     }
@@ -232,7 +224,7 @@ public static unsafe class NFD
         }
         finally
         {
-            foreach (var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
+            foreach (ref var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
             PInvoke.NFD_Quit();
         }
     }
@@ -252,9 +244,7 @@ public static unsafe class NFD
             Span<byte> defaultPathUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultPath)];
             Encoding.UTF8.GetBytes(defaultPath, defaultPathUtf8);
 
-            fixed (byte* defaultPathPtr = defaultPathUtf8)
-            {
-                PInvoke.NFD_OpenDialogMultipleU8(out var ptr, filters, list.Length, defaultPathPtr).ThrowOnError();
+                PInvoke.NFD_OpenDialogMultipleU8(out var ptr, filters, list.Length, (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8))).ThrowOnError();
                 PInvoke.NFD_PathSet_GetCount(ptr, out var count);
 
                 var array = new string[count];
@@ -268,11 +258,10 @@ public static unsafe class NFD
                 PInvoke.NFD_FreePathU8(ptr);
 
                 return array;
-            }
         }
         finally
         {
-            foreach (var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
+            foreach (ref var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
             PInvoke.NFD_Quit();
         }
     }
@@ -300,7 +289,7 @@ public static unsafe class NFD
         }
         finally
         {
-            foreach (var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
+            foreach (ref var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
             PInvoke.NFD_Quit();
         }
     }
@@ -331,7 +320,7 @@ public static unsafe class NFD
         }
         finally
         {
-            foreach (var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
+            foreach (ref var ptr in allocLists) Marshal.FreeCoTaskMem(ptr);
             PInvoke.NFD_Quit();
         }
     }
