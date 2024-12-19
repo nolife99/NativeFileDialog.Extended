@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Version>1.2.1</Version>
-        <Title>NativeFileDialogExtended</Title>
+        <Title>NfdExt</Title>
         <Authors>TheAirBlow, btzy</Authors>
         <Description>Simple to use C# wrapper for nativefiledialog-extended</Description>
         <Copyright>Copyright © TheAirBlow 2024</Copyright>
