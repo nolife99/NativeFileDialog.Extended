@@ -1,4 +1,4 @@
-namespace NativeFileDialog.Extended;
+namespace NfdExt;
 
 using System.Runtime.InteropServices;
 
