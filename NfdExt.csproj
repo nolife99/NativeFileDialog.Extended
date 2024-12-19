@@ -3,7 +3,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Version>1.2.1</Version>
+        <Version>1.2.2</Version>
         <Title>NfdExt</Title>
         <Authors>TheAirBlow, btzy</Authors>
         <Description>Simple to use C# wrapper for nativefiledialog-extended</Description>
@@ -21,17 +21,29 @@
             <PackagePath>runtimes/win-x64/native</PackagePath>
             <Pack>true</Pack>
         </Content>
+        <Content Include="nfd.dll">
+            <PackagePath>runtimes/win-x86/native</PackagePath>
+            <Pack>true</Pack>
+        </Content>
         <Content Include="libnfd.so">
             <PackagePath>runtimes/linux-x64/native</PackagePath>
+            <Pack>true</Pack>
+        </Content>
+        <Content Include="libnfd.so">
+            <PackagePath>runtimes/linux-x86/native</PackagePath>
+            <Pack>true</Pack>
+        </Content>
+        <Content Include="libnfd.dylib">
+            <PackagePath>runtimes/osx-arm64/native</PackagePath>
             <Pack>true</Pack>
         </Content>
         <Content Include="libnfd.dylib">
             <PackagePath>runtimes/osx/native</PackagePath>
             <Pack>true</Pack>
         </Content>
-        <Content Include="build\net40\NfdExt.targets">
-            <PackagePath>build/net40/NfdExt.targets</PackagePath>
-            <Pack>true</Pack>
+        <Content Update="build\NfdExt.targets">
+          <PackagePath>build/NfdExt.targets</PackagePath>
+          <Pack>true</Pack>
         </Content>
     </ItemGroup>
 </Project>
