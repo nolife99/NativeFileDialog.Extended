@@ -321,14 +321,16 @@ public static unsafe class NFD
             Span<byte> defaultPathUtf8 = stackalloc byte[Encoding.UTF8.GetByteCount(defaultPath)];
             Encoding.UTF8.GetBytes(defaultPath, defaultPathUtf8);
 
-            fixed (byte* defaultPathPtr = defaultPathUtf8)
-            {
-                PInvoke.NFD_OpenDialogU8(out var path, filters, filterList.Count, defaultPathPtr).ThrowOnError();
-                var str = Marshal.PtrToStringUTF8(path);
-                PInvoke.NFD_FreePathU8(path);
+            PInvoke.NFD_OpenDialogU8(out var path,
+                    filters,
+                    filterList.Count,
+                    (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(defaultPathUtf8)))
+                .ThrowOnError();
 
-                return str;
-            }
+            var str = Marshal.PtrToStringUTF8(path);
+            PInvoke.NFD_FreePathU8(path);
+
+            return str;
         }
         finally
         {

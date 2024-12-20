@@ -3,10 +3,10 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Version>1.2.3</Version>
+        <Version>1.2.4</Version>
         <Title>NfdExt</Title>
         <Authors>TheAirBlow, btzy</Authors>
-        <Description>Simple to use C# wrapper for nativefiledialog-extended</Description>
+        <Description>C# wrapper for nativefiledialog-extended.</Description>
         <Copyright>Copyright © TheAirBlow 2024</Copyright>
         <PackageProjectUrl>https://github.com/nolife99/NativeFileDialog.Extended</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/nolife99/NativeFileDialog.Extended/blob/main/LICENCE</PackageLicenseUrl>
@@ -39,12 +39,12 @@
             <Pack>true</Pack>
         </Content>
         <Content Include="libnfd.dylib">
-            <PackagePath>runtimes/osx/native</PackagePath>
+            <PackagePath>runtimes/osx-x64/native</PackagePath>
             <Pack>true</Pack>
         </Content>
         <Content Update="build\NfdExt.targets">
-          <PackagePath>build/NfdExt.targets</PackagePath>
-          <Pack>true</Pack>
+            <PackagePath>build/NfdExt.targets</PackagePath>
+            <Pack>true</Pack>
         </Content>
     </ItemGroup>
 </Project>

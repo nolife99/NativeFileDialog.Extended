@@ -25,3 +25,5 @@ NFD.SaveDialog(".", "NFD.cs",
 
 NFD.PickFolder(".");
 ```
+
+This version fixes memory leaks that were present in the original fork.

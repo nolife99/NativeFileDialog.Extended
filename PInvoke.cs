@@ -58,13 +58,13 @@ internal static unsafe partial class PInvoke
     [LibraryImport(LibName)] public static partial void NFD_FreePathN(nint filePath);
     [LibraryImport(LibName)] public static partial void NFD_FreePathU8(nint filePath);
 
-    public struct FilterU8
+    [StructLayout(LayoutKind.Sequential)] public struct FilterU8
     {
         public byte* Name;
         public byte* Spec;
     }
 
-    public struct FilterN
+    [StructLayout(LayoutKind.Sequential)] public struct FilterN
     {
         public char* Name;
         public char* Spec;
