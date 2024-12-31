@@ -339,9 +339,10 @@ public static unsafe class NFD
         }
     }
 
-    static void ThrowOnError(this PInvoke.Result result)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static void ThrowOnError(this int result)
     {
-        if (result is PInvoke.Result.NFD_ERROR) throw new ExternalException(GetError());
+        if (result == 0) throw new ExternalException(GetError());
     }
 
     static void ToFilterListU8(this IReadOnlyCollection<KeyValuePair<string, string>> dict,

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Version>1.2.4</Version>
@@ -22,16 +22,8 @@
             <PackagePath>runtimes/win-x64/native</PackagePath>
             <Pack>true</Pack>
         </Content>
-        <Content Include="nfd.dll">
-            <PackagePath>runtimes/win-x86/native</PackagePath>
-            <Pack>true</Pack>
-        </Content>
         <Content Include="libnfd.so">
             <PackagePath>runtimes/linux-x64/native</PackagePath>
-            <Pack>true</Pack>
-        </Content>
-        <Content Include="libnfd.so">
-            <PackagePath>runtimes/linux-x86/native</PackagePath>
             <Pack>true</Pack>
         </Content>
         <Content Include="libnfd.dylib">
